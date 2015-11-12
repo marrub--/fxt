@@ -1,7 +1,7 @@
-#include "gl_core_3_3.h"
+#include "gl_2_1.h"
 #include "SDL.h"
-#include "SDL_opengl.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 struct renderinfo
 {
@@ -149,15 +149,14 @@ void R_Init()
 	// Init GL info.
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-
 	// Init window.
-	SDL_CreateWindowAndRenderer(re.ScrW, re.ScrH, SDL_WINDOW_SHOWN, &re.Window, &re.Renderer);
+	SDL_CreateWindowAndRenderer(re.ScrW, re.ScrH, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN, &re.Window, &re.Renderer);
 
 	// Init GL context.
 	re.Context = SDL_GL_CreateContext(re.Window);
-	ogl_LoadFunctions();
 	SDL_GL_SetSwapInterval(1);
+	
+	ogl_LoadFunctions();
 
 	R_InitGL();
 
