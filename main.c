@@ -55,11 +55,33 @@ GLuint R_CreateShader(GLenum type, char const *src)
 	if(!success)
 	{
 		glGetShaderInfoLog(shader, 512, NULL, log);
-		printf("Shader compile failed: %s\n", log);
+		fprintf(stderr, "Shader compile failed!\n%s\n", log);
 		exit(1);
 	}
 
 	return shader;
+}
+
+GLuint R_LinkProgram(GLuint vertShader, GLuint fragShader)
+{
+	char log[512];
+	GLint success;
+	GLuint program;
+
+	program = glCreateProgram();
+	glAttachShader(program, vertShader);
+	glAttachShader(program, fragShader);
+	glLinkProgram(program);
+	glGetProgramiv(program, GL_LINK_STATUS, &success);
+
+	if(!success)
+	{
+		glGetProgramInfoLog(program, 512, NULL, log);
+		fprintf(stderr, "Failed to link shader program!\n%s\n", log);
+		exit(1);
+	}
+
+	return program;
 }
 
 char const *FXT_ReadFile(char const *fname)
@@ -98,11 +120,7 @@ void R_InitGL()
 	// Init shaders.
 	re.VertShader = R_CreateShader(GL_VERTEX_SHADER, FXT_ReadFile("main.vp.glsl"));
 	re.FragShader = R_CreateShader(GL_FRAGMENT_SHADER, FXT_ReadFile("main.fp.glsl"));
-
-	re.Program = glCreateProgram();
-	glAttachShader(re.Program, re.VertShader);
-	glAttachShader(re.Program, re.FragShader);
-	glLinkProgram(re.Program);
+	re.Program = R_LinkProgram(re.VertShader, re.FragShader);
 
 	// Init uniform and attribute locations.
 
